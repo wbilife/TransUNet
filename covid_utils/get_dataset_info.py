@@ -49,11 +49,11 @@ def print_dataset_label_info(labelset) :
 
 def test1():
     visual_test_path = "/home/wubo/BiYeExp/TempTest/"
-    create_visual(datasetA[20, :, :, 0], masksetA[20, :, :, 0], 1, visual_test_path + "1.png", 1)
-    create_visual_muti_label(datasetA[20, :, :, 0], masksetA[20, :, :], visual_test_path + "2.png", -1)
-    img = image_process_utils.create_img(datasetA[20, :, :, 0])
-    mask = image_process_utils.create_mask(masksetA[20, :, :])
-    create_visual(datasetA[20, :, :, 0], mask, 1, visual_test_path + "3.png", 1)
+    create_visual(datasetA[0, :, :, 0], masksetA[0, :, :, 0], 1, visual_test_path + "1.png", 1)
+    create_visual_muti_label(datasetA[0, :, :, 0], masksetA[0, :, :], visual_test_path + "2.png", -1)
+    img = image_process_utils.create_img(datasetA[0, :, :, 0])
+    mask = image_process_utils.create_mask(masksetA[0, :, :])
+    create_visual(datasetA[0, :, :, 0], mask, 1, visual_test_path + "slice_0.png", 1)
 
 def create_dataset_visual():
     """

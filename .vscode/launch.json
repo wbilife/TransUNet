@@ -6,7 +6,15 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "cwd": "${fileDirname}"
+            "cwd": "${fileDirname}",
+            "env":{
+                "CUDA_VISIBLE_DEVICES":"1,2,3,4,5,6"
+            },
+            "args": [
+                "--n_gpu", "6",
+                "--dataset", "Covid",
+                "--vit_name", "R50-ViT-B_16"
+            ]
         }
     ]
 }

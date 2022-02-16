@@ -23,7 +23,7 @@ def img_normalized(img, method = 1):
 
 def create_img(img):
     img = modify_lung_window(img)
-    img = img_normalized(img)
+    # img = img_normalized(img)
     return img
 
 def create_mask(mask):

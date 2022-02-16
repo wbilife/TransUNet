@@ -7,7 +7,7 @@ import torch
 import torch.backends.cudnn as cudnn
 from networks.vit_seg_modeling import VisionTransformer as ViT_seg
 from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
-from trainer import trainer_synapse
+from trainer import trainer_synapse,trainer_covid
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--root_path', type=str,
@@ -23,14 +23,14 @@ parser.add_argument('--max_iterations', type=int,
 parser.add_argument('--max_epochs', type=int,
                     default=150, help='maximum epoch number to train')
 parser.add_argument('--batch_size', type=int,
-                    default=24, help='batch_size per gpu')
+                    default=4, help='batch_size per gpu')
 parser.add_argument('--n_gpu', type=int, default=1, help='total gpu')
 parser.add_argument('--deterministic', type=int,  default=1,
                     help='whether use deterministic training')
 parser.add_argument('--base_lr', type=float,  default=0.01,
                     help='segmentation network learning rate')
 parser.add_argument('--img_size', type=int,
-                    default=224, help='input patch size of network input')
+                    default=512, help='input patch size of network input')
 parser.add_argument('--seed', type=int,
                     default=1234, help='random seed')
 parser.add_argument('--n_skip', type=int,
@@ -39,6 +39,10 @@ parser.add_argument('--vit_name', type=str,
                     default='R50-ViT-B_16', help='select one vit model')
 parser.add_argument('--vit_patches_size', type=int,
                     default=16, help='vit_patches_size, default is 16')
+parser.add_argument('--covid_startid', type=int,
+                    default=0, help='start idx for covid dataset')
+parser.add_argument('--covid_endid', type=int,
+                    default=470, help='end idx for covid dataset(include)')                  
 args = parser.parse_args()
 
 
@@ -61,6 +65,11 @@ if __name__ == "__main__":
             'list_dir': './lists/lists_Synapse',
             'num_classes': 9,
         },
+        'Covid' : {
+            'root_path': '../data/',
+            'list_dir': '',
+            'num_classes' : 2,
+        }
     }
     args.num_classes = dataset_config[dataset_name]['num_classes']
     args.root_path = dataset_config[dataset_name]['root_path']
@@ -89,5 +98,5 @@ if __name__ == "__main__":
     net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
     net.load_from(weights=np.load(config_vit.pretrained_path))
 
-    trainer = {'Synapse': trainer_synapse,}
+    trainer = {'Synapse': trainer_synapse, 'Covid': trainer_covid}
     trainer[dataset_name](args, net, snapshot_path)
