@@ -1,3 +1,4 @@
+from cv2 import merge
 import numpy as np
 import torch
 from medpy import metric
@@ -8,6 +9,7 @@ import matplotlib as mpl
 mpl.use('Agg')
 import matplotlib.pyplot as plt
 import cv2
+import os
 from matplotlib import patches
 
 class DiceLoss(nn.Module):
@@ -61,6 +63,20 @@ def calculate_metric_percase(pred, gt):
     else:
         return 0, 0
 
+def calculate_metric_percase_covid(pred, gt):
+    pred[pred > 0] = 1
+    gt[gt > 0] = 1
+    if pred.sum() > 0 and gt.sum()>0:
+        dice = metric.binary.dc(pred, gt)
+        precision = metric.precision(pred, gt)
+        recall = metric.recall(pred, gt)
+        f1 = (2 * precision * recall) / (precision + recall)
+        hd95 = metric.binary.hd95(pred, gt)
+        return dice, precision, recall, f1, hd95
+    elif pred.sum() > 0 and gt.sum()==0:
+        return 1, 0, 0, 0, 0
+    else:
+        return 0, 0, 0, 0, 0
 
 def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_save_path=None, case=None, z_spacing=1):
     image, label = image.squeeze(0).cpu().detach().numpy(), label.squeeze(0).cpu().detach().numpy()
@@ -83,6 +99,7 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
                     pred = out
                 prediction[ind] = pred
     else:
+        # 获取covid数据集的测试结果，指标是单个切片计算，但为了存储方便，将预测结果堆叠在一起以一个文件的形式进行存储
         input = torch.from_numpy(image).unsqueeze(
             0).unsqueeze(0).float().cuda()
         net.eval()
@@ -91,7 +108,7 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
             prediction = out.cpu().detach().numpy()
     metric_list = []
     for i in range(1, classes):
-        metric_list.append(calculate_metric_percase(prediction == i, label == i))
+        metric_list.append(calculate_metric_percase_covid(prediction == i, label == i))
 
     if test_save_path is not None:
         img_itk = sitk.GetImageFromArray(image.astype(np.float32))
@@ -103,7 +120,7 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
         sitk.WriteImage(prd_itk, test_save_path + '/'+case + "_pred.nii.gz")
         sitk.WriteImage(img_itk, test_save_path + '/'+ case + "_img.nii.gz")
         sitk.WriteImage(lab_itk, test_save_path + '/'+ case + "_gt.nii.gz")
-    return metric_list
+    return metric_list, prediction
 
 def create_visual(img, label, color_code, path, thicnkess = -1):
         """
@@ -203,4 +220,18 @@ def create_visual_muti_label(img, label, path, thicnkess = -1):
         # dpi是设置清晰度的，大于300就很清晰了，但是保存下来的图片很大
         plt.savefig(path, dpi = 300)
         plt.close()
+
+def save_covid_test_result(test_save_path, image, label, prediction, start, end):
+    if not os.path.exists(test_save_path):
+        os.makedirs(test_save_path)
+    save_name = "covid_test_slice_{}_to_{}".format(start, end)
+    img_itk = sitk.GetImageFromArray(image.astype(np.uint8))
+    prd_itk = sitk.GetImageFromArray(prediction.astype(np.uint8))
+    lab_itk = sitk.GetImageFromArray(label.astype(np.uint8))
+    img_itk.SetSpacing((1, 1, 1))
+    prd_itk.SetSpacing((1, 1, 1))
+    lab_itk.SetSpacing((1, 1, 1))
+    sitk.WriteImage(prd_itk, test_save_path + '/'+ save_name + "_pred.nii.gz")
+    sitk.WriteImage(img_itk, test_save_path + '/'+ save_name + "_img.nii.gz")
+    sitk.WriteImage(lab_itk, test_save_path + '/'+ save_name + "_gt.nii.gz")
 

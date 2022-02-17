@@ -42,7 +42,7 @@ parser.add_argument('--vit_patches_size', type=int,
 parser.add_argument('--covid_startid', type=int,
                     default=0, help='start idx for covid dataset')
 parser.add_argument('--covid_endid', type=int,
-                    default=470, help='end idx for covid dataset(include)')                  
+                    default=370, help='end idx for covid dataset(include)')                  
 args = parser.parse_args()
 
 
