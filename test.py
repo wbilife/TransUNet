@@ -42,9 +42,13 @@ parser.add_argument('--base_lr', type=float,  default=0.01, help='segmentation n
 parser.add_argument('--seed', type=int, default=1234, help='random seed')
 parser.add_argument('--vit_patches_size', type=int, default=16, help='vit_patches_size, default is 16')
 parser.add_argument('--covid_startid', type=int,
-                    default=371, help='start idx for covid dataset')
+                    default=0, help='start train idx for covid dataset')
 parser.add_argument('--covid_endid', type=int,
-                    default=471, help='end idx for covid dataset(include)')   
+                    default=370, help='end train idx for covid dataset(include)')  
+parser.add_argument('--test_covid_startid', type=int,
+                    default=371, help='start train idx for covid dataset')
+parser.add_argument('--test_covid_endid', type=int,
+                    default=471, help='end train idx for covid dataset(include)')   
 args = parser.parse_args()
 
 
@@ -70,7 +74,7 @@ def inference(args, model, test_save_path=None):
     return "Testing Finished!"
 
 def inference_covid2d(args, model, test_save_path=None):
-    db_test = args.Dataset(base_dir=args.volume_path, start_id=args.covid_startid, end_id=args.covid_endid)
+    db_test = args.Dataset(base_dir=args.volume_path, start_id=args.test_covid_startid, end_id=args.test_covid_endid)
     testloader = DataLoader(db_test, batch_size=1, shuffle=False, num_workers=1)
     logging.info("{} test iterations per epoch".format(len(testloader)))
     model.eval()
@@ -152,6 +156,8 @@ if __name__ == "__main__":
     snapshot_path = snapshot_path + '_lr' + str(args.base_lr) if args.base_lr != 0.01 else snapshot_path
     snapshot_path = snapshot_path + '_'+str(args.img_size)
     snapshot_path = snapshot_path + '_s'+str(args.seed) if args.seed!=1234 else snapshot_path
+    snapshot_path = snapshot_path + '_start'+str(args.covid_startid)
+    snapshot_path = snapshot_path + '_end'+str(args.covid_endid)
 
     config_vit = CONFIGS_ViT_seg[args.vit_name]
     config_vit.n_classes = args.num_classes

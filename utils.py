@@ -1,3 +1,4 @@
+import re
 from cv2 import merge
 import numpy as np
 import torch
@@ -70,7 +71,10 @@ def calculate_metric_percase_covid(pred, gt):
         dice = metric.binary.dc(pred, gt)
         precision = metric.precision(pred, gt)
         recall = metric.recall(pred, gt)
-        f1 = (2 * precision * recall) / (precision + recall)
+        if precision + recall >= 1e-6 :
+            f1 = (2 * precision * recall) / (precision + recall)
+        else :
+            f1 = 0
         hd95 = metric.binary.hd95(pred, gt)
         return dice, precision, recall, f1, hd95
     elif pred.sum() > 0 and gt.sum()==0:
