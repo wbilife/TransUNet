@@ -159,13 +159,17 @@ if __name__ == "__main__":
     snapshot_path = snapshot_path + '_start'+str(args.covid_startid)
     snapshot_path = snapshot_path + '_end'+str(args.covid_endid)
 
-    config_vit = CONFIGS_ViT_seg[args.vit_name]
-    config_vit.n_classes = args.num_classes
-    config_vit.n_skip = args.n_skip
-    config_vit.patches.size = (args.vit_patches_size, args.vit_patches_size)
-    if args.vit_name.find('R50') !=-1:
-        config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
-    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+    if args.vit_name.casefold().find('unet') != -1:
+        from networks.unet import UNet
+        net = UNet(n_classes=args.num_classes).cuda()
+    else :
+        config_vit = CONFIGS_ViT_seg[args.vit_name]
+        config_vit.n_classes = args.num_classes
+        config_vit.n_skip = args.n_skip
+        config_vit.patches.size = (args.vit_patches_size, args.vit_patches_size)
+        if args.vit_name.find('R50') !=-1:
+            config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
+        net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
     net = DataParallel(net)
 
     snapshot = os.path.join(snapshot_path, 'best_model.pth')
