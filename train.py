@@ -93,13 +93,17 @@ if __name__ == "__main__":
 
     if not os.path.exists(snapshot_path):
         os.makedirs(snapshot_path)
-    config_vit = CONFIGS_ViT_seg[args.vit_name]
-    config_vit.n_classes = args.num_classes
-    config_vit.n_skip = args.n_skip
-    if args.vit_name.find('R50') != -1:
-        config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
-    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    net.load_from(weights=np.load(config_vit.pretrained_path))
+    if args.vit_name.casefold().find('unet') != -1:
+        from networks.unet import UNet
+        net = UNet(n_classes=args.num_classes).cuda()
+    else:
+        config_vit = CONFIGS_ViT_seg[args.vit_name]
+        config_vit.n_classes = args.num_classes
+        config_vit.n_skip = args.n_skip
+        if args.vit_name.find('R50') != -1:
+            config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
+        net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+        net.load_from(weights=np.load(config_vit.pretrained_path))
 
     trainer = {'Synapse': trainer_synapse, 'Covid': trainer_covid}
     trainer[dataset_name](args, net, snapshot_path)

@@ -7,19 +7,21 @@
             "program": "${file}",
             "console": "integratedTerminal",
             "cwd": "${fileDirname}",
-            "env":{
-                "CUDA_VISIBLE_DEVICES":"1,2,3,4,5,6"
+            "env": {
+                "CUDA_VISIBLE_DEVICES" :"4,6,7"
             },
             "args": [
                 "--dataset", "Covid",
                 "--max_epochs","150",
-                "--batch_size", "4",
-                "--vit_name", "R50-ViT-B_16",
+                "--batch_size", "8",
+                "--vit_name", "UNet",
                 "--covid_startid", "0",
                 "--covid_endid", "370",
-                "--test_covid_startid", "371",
-                "--test_covid_endid", "470",
-                "--is_savenii"
+                "--n_gpu", "3"
+                // "--vit_name", "R50-ViT-B_16",
+                // "--test_covid_startid", "371",
+                // "--test_covid_endid", "470",
+                // "--is_savenii"
             ]
         }
     ]
