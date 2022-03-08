@@ -106,7 +106,8 @@ def trainer_covid(args, model, snapshot_path):
     num_classes = args.num_classes
     batch_size = args.batch_size * args.n_gpu
     # max_iterations = args.max_iterations
-    db_train = Covid_dataset(base_dir=args.root_path , start_id=args.covid_startid, end_id=args.covid_endid,
+    db_train = Covid_dataset(base_dir=args.root_path , test_start_id=args.test_covid_startid, test_end_id=args.test_covid_endid,
+                               mode = args.mode,
                                transform=transforms.Compose(
                                    [RandomGenerator(output_size=[args.img_size, args.img_size])]))
     print("The length of train set is: {}".format(len(db_train)))

@@ -38,12 +38,14 @@ parser.add_argument('--n_skip', type=int,
                     default=3, help='using number of skip-connect, default is num')
 parser.add_argument('--vit_name', type=str,
                     default='R50-ViT-B_16', help='select one vit model')
+parser.add_argument('--mode', type=str,
+                    default='train', help='train or test')
 parser.add_argument('--vit_patches_size', type=int,
-                    default=16, help='vit_patches_size, default is 16')
-parser.add_argument('--covid_startid', type=int,
-                    default=0, help='start idx for covid dataset')
-parser.add_argument('--covid_endid', type=int,
-                    default=370, help='end idx for covid dataset(include)')                  
+                    default=16, help='vit_patches_size, default is 16')     
+parser.add_argument('--test_covid_startid', type=int,
+                    default=371, help='start train idx for covid dataset')
+parser.add_argument('--test_covid_endid', type=int,
+                    default=470, help='end train idx for covid dataset(include)')               
 args = parser.parse_args()
 
 
@@ -88,8 +90,8 @@ if __name__ == "__main__":
     snapshot_path = snapshot_path + '_lr' + str(args.base_lr) if args.base_lr != 0.01 else snapshot_path
     snapshot_path = snapshot_path + '_'+str(args.img_size)
     snapshot_path = snapshot_path + '_s'+str(args.seed) if args.seed!=1234 else snapshot_path
-    snapshot_path = snapshot_path + '_start'+str(args.covid_startid)
-    snapshot_path = snapshot_path + '_end'+str(args.covid_endid)
+    snapshot_path = snapshot_path + '_start'+str(args.test_covid_startid)
+    snapshot_path = snapshot_path + '_end'+str(args.test_covid_endid)
 
     if not os.path.exists(snapshot_path):
         os.makedirs(snapshot_path)
