@@ -98,7 +98,7 @@ def inference_covid2d(args, model, test_save_path=None):
     mean_hd95 = np.mean(metric_list, axis=0)[4]
     logging.info('Testing performance in best val model: mean_dice %f mean_precision %f mean_recall %f mean_f1 %f mean_hd95 %f' % (performance, precision, recall, f1,mean_hd95))
     if test_save_path is not None :
-        save_covid_test_result(test_save_path, np.array(test_image), np.array(test_label), np.array(test_prediction), args.covid_startid, args.covid_endid)
+        save_covid_test_result(test_save_path, np.array(test_image), np.array(test_label), np.array(test_prediction), args.test_covid_startid, args.test_covid_startid)
     return "Testing Finished!"
 
 

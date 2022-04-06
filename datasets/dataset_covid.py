@@ -23,7 +23,7 @@ class Covid_dataset(Dataset):
             self.masks_data = np.vstack([masks_data1, masks_data2])
         else :
             self.imgs_data = all_imgs[test_start_id : test_end_id, :, :]
-            self.masks_data = all_masks[test_end_id : all_imgs.shape[0] + 1, :, :]
+            self.masks_data = all_masks[test_start_id : test_end_id, :, :]
 
     def __len__(self):
         return self.imgs_data.shape[0]
