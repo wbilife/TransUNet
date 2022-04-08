@@ -8,17 +8,18 @@
             "console": "integratedTerminal",
             "cwd": "${fileDirname}",
             "env": {
-                "CUDA_VISIBLE_DEVICES" :"2,5"
+                "CUDA_VISIBLE_DEVICES" :"4,5"
             },
             "args": [
+                
                 "--max_epochs","150",
-                "--batch_size", "4",
-                "--n_gpu", "4",
-                "--test_covid_startid", "200",
-                "--test_covid_endid", "300",
+                "--batch_size", "8",
+                "--n_gpu", "2",
+                "--test_covid_startid", "100",
+                "--test_covid_endid", "200",
                 // "--vit_name", "R50-ViT-B_16",
-                "--vit_name", "UNet",
-                "--is_savenii"
+                "--vit_name", "UNet"
+                // "--is_savenii"
             ]
         }
     ]
